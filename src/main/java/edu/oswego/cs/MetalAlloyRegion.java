@@ -5,19 +5,19 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class MetalAlloyRegion {
 
-    private int temperature;
+    private double temperature;
     private int r;
     private int g;
     private int b;
-    public static final int TEMPTHRESHOLD1 = 0;
+    public static final double TEMPTHRESHOLD1 = 0;
     public static final int RTHRESHOLD1 = 13;
     public static final int GTHRESHOLD1 = 21;
     public static final int BTHRESHOLD1 = 235;
-    public static final int TEMPTHRESHOLD2 = 350;
+    public static final double TEMPTHRESHOLD2 = 350;
     public static final int RTHRESHOLD2 = 253;
     public static final int GTHRESHOLD2 = 29;
     public static final int BTHRESHOLD2 = 29;
-    public static final int TEMPTHRESHOLD3 = 700;
+    public static final double TEMPTHRESHOLD3 = 700;
     public static final int RTHRESHOLD3 = 247;
     public static final int GTHRESHOLD3 = 255;
     public static final int BTHRESHOLD3 = 143;
@@ -26,7 +26,7 @@ public class MetalAlloyRegion {
     private double percentOfMetal3;
 
 
-    public MetalAlloyRegion(int temperature) {
+    public MetalAlloyRegion(double temperature) {
         this.temperature = temperature;
         Random random = ThreadLocalRandom.current();
         double variance = 0.25;
@@ -37,15 +37,15 @@ public class MetalAlloyRegion {
         percentOfMetal3 = 1.0 - (percentOfMetal2 + percentOfMetal1);
     }
 
-    public void setTemperature(int temperature) {
+    public void setTemperature(double temperature) {
         this.temperature = temperature;
     }
 
-    public int getTemperature() {
+    public double getTemperature() {
         return temperature;
     }
 
-    public void increaseTemperature(int tempIncrease) {
+    public void increaseTemperature(double tempIncrease) {
         temperature += tempIncrease;
     }
 
@@ -59,6 +59,18 @@ public class MetalAlloyRegion {
 
     public int getB() {
         return b;
+    }
+
+    public double getPercentOfMetal1() {
+        return percentOfMetal1;
+    }
+
+    public double getPercentOfMetal2() {
+        return percentOfMetal2;
+    }
+
+    public double getPercentOfMetal3() {
+        return percentOfMetal3;
     }
 
     /**
@@ -94,7 +106,7 @@ public class MetalAlloyRegion {
      * @param tempThreshold2 the temperature ranges ending point
      * @return The calculated color value for a rgb value of the alloy.
      */
-    public int calcColorBetweenThreshold(int temperature, int colorThreshold1, int colorThreshold2, int tempThreshold1, int tempThreshold2) {
-        return (int)Math.floor(colorThreshold1 + (temperature * (colorThreshold2 - (double)colorThreshold1) / (tempThreshold2 - tempThreshold1)));
+    public int calcColorBetweenThreshold(double temperature, int colorThreshold1, int colorThreshold2, double tempThreshold1, double tempThreshold2) {
+        return (int)Math.floor(colorThreshold1 + (temperature * (colorThreshold2 - colorThreshold1) / (tempThreshold2 - tempThreshold1)));
     }
 }
