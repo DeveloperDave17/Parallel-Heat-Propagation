@@ -1,5 +1,10 @@
 package edu.oswego.cs;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Phaser;
+import java.util.concurrent.TimeUnit;
+
 public class Main {
 
     private static final double DEFAULT_S = 30.0;
@@ -9,6 +14,7 @@ public class Main {
     private static final double DEFAULT_C3 = 1.25;
     private static final int DEFAULT_HEIGHT = 1000;
     private static final int DEFAULT_WIDTH = 4000;
+    private static final int DEFAULT_THRESHOLD = 1000;
 
     public static void main(String[] args) {
         // How much the top left corner will be heated up at the beginning of each phase
@@ -58,5 +64,60 @@ public class Main {
         } else {
             WIDTH = DEFAULT_WIDTH;
         }
+        final int THRESHOLD;
+        if (args.length > 7) {
+            THRESHOLD = Integer.parseInt(args[7]);
+        } else {
+            THRESHOLD = DEFAULT_THRESHOLD;
+        }
+    }
+
+    public static void runSimulation(double s, double t, double c1, double c2, double c3, int height, int width, int threshold) throws SecurityException, InterruptedException {
+        final MetalAlloy alloyA = new MetalAlloy(height, width, c1, c2, c3);
+        final MetalAlloy alloyB = new MetalAlloy(height, width, c1, c2, c3);
+        final Phaser quadrantPhaser = new Phaser();
+        final Phaser regionPhaser = new Phaser();
+        for (int currentIteration = 1; currentIteration <= threshold; currentIteration++) {
+            ExecutorService workStealingPool = new ForkJoinPool();
+            // Swap which alloy is the preOperationAlloy
+            boolean useAForPreOp = currentIteration % 2 == 0;
+            // Increase temperature of each corner
+            if (useAForPreOp) {
+                alloyA.increaseTempOfRegion(s, 0, 0);
+                alloyA.increaseTempOfRegion(t, height - 1, width - 1);
+            } else {
+                alloyB.increaseTempOfRegion(s, 0, 0);
+                alloyB.increaseTempOfRegion(t, height - 1, width - 1);
+            }
+            // Update the Metal Alloy
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    if (i == 0 && i == j) {
+                        continue;
+                    }
+                    if (i == height - 1 && j == width - 1) {
+                        continue;
+                    }
+                    final int ROW = i;
+                    final int COL = j;
+                    if (useAForPreOp) {
+                        workStealingPool.submit(() -> {
+                            double result = alloyA.calculateNewTempForRegion(ROW, COL);
+                            alloyB.setTempOfRegion(result, ROW, COL);
+                            alloyB.getMetalAlloyRegion(ROW, COL).calcRGB();
+                        });
+                    } else {
+                        workStealingPool.submit(() -> {
+                            double result = alloyB.calculateNewTempForRegion(ROW, COL);
+                            alloyA.setTempOfRegion(result, ROW, COL);
+                            alloyA.getMetalAlloyRegion(ROW, COL).calcRGB();
+                        });
+                    }
+                }
+            }
+            workStealingPool.shutdown();
+            workStealingPool.awaitTermination(10, TimeUnit.SECONDS);
+        }
+
     }
 }

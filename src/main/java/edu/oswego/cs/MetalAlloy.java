@@ -12,13 +12,12 @@ public class MetalAlloy {
 
     private MetalAlloyRegion[][] metalAlloyRegions;
 
-    public MetalAlloy(int height, double c1, double c2, double c3) {
+    public MetalAlloy(int height, int width, double c1, double c2, double c3) {
         this.height = height;
+        this.width = width;
         this.c1 = c1;
         this.c2 = c2;
         this.c3 = c3;
-        // The rectangular alloy must be 4 times as wide as it is high
-        this.width = height * 4;
         metalAlloyRegions = new MetalAlloyRegion[height][width];
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -28,8 +27,16 @@ public class MetalAlloy {
         }
     }
 
-    public void increaseTempOfRegion(int tempIncrease, int row, int col) {
+    public void increaseTempOfRegion(double tempIncrease, int row, int col) {
         metalAlloyRegions[row][col].increaseTemperature(tempIncrease);
+    }
+
+    public void setTempOfRegion(double newTemp, int row, int col) {
+        metalAlloyRegions[row][col].setTemperature(newTemp);
+    }
+
+    public MetalAlloyRegion getMetalAlloyRegion(int row, int col) {
+        return metalAlloyRegions[row][col];
     }
 
     public double calculateNewTempForRegion(int row, int col) {
@@ -59,28 +66,43 @@ public class MetalAlloy {
     public double getMetalSummation(int row, int col, int metalType) {
         double metalSummation = 0;
         if (metalType == 1) {
-            for (int i = row - 1; i <= row + 1; i++) {
-                for (int j = col - 1; j <= col + 1; j++) {
-                    if (i != row && j != col && !(i < 0) && !(i >= height) && !(j < 0) && !(j >= width)) {
-                        metalSummation += metalAlloyRegions[i][j].getPercentOfMetal1() * metalAlloyRegions[i][j].getTemperature();
-                    }
-                }
+            if (row > 0) {
+                metalSummation += metalAlloyRegions[row - 1][col].getPercentOfMetal1() * metalAlloyRegions[row - 1][col].getTemperature();
+            }
+            if (row < height - 1) {
+                metalSummation += metalAlloyRegions[row + 1][col].getPercentOfMetal1() * metalAlloyRegions[row + 1][col].getTemperature();
+            }
+            if (col > 0) {
+                metalSummation += metalAlloyRegions[row][col - 1].getPercentOfMetal1() * metalAlloyRegions[row][col - 1].getTemperature();
+            }
+            if (col < width - 1) {
+                metalSummation += metalAlloyRegions[row][col + 1].getPercentOfMetal1() * metalAlloyRegions[row][col + 1].getTemperature();
             }
         } else if (metalType == 2) {
-            for (int i = row - 1; i <= row + 1; i++) {
-                for (int j = col - 1; j <= col + 1; j++) {
-                    if (i != row && j != col && !(i < 0) && !(i >= height) && !(j < 0) && !(j >= width)) {
-                        metalSummation += metalAlloyRegions[i][j].getPercentOfMetal2() * metalAlloyRegions[i][j].getTemperature();
-                    }
-                }
+            if (row > 0) {
+                metalSummation += metalAlloyRegions[row - 1][col].getPercentOfMetal2() * metalAlloyRegions[row - 1][col].getTemperature();
+            }
+            if (row < height - 1) {
+                metalSummation += metalAlloyRegions[row + 1][col].getPercentOfMetal2() * metalAlloyRegions[row + 1][col].getTemperature();
+            }
+            if (col > 0) {
+                metalSummation += metalAlloyRegions[row][col - 1].getPercentOfMetal2() * metalAlloyRegions[row][col - 1].getTemperature();
+            }
+            if (col < width - 1) {
+                metalSummation += metalAlloyRegions[row][col + 1].getPercentOfMetal2() * metalAlloyRegions[row][col + 1].getTemperature();
             }
         } else if (metalType == 3) {
-            for (int i = row - 1; i <= row + 1; i++) {
-                for (int j = col - 1; j <= col + 1; j++) {
-                    if (i != row && j != col && !(i < 0) && !(i >= height) && !(j < 0) && !(j >= width)) {
-                        metalSummation += metalAlloyRegions[i][j].getPercentOfMetal3() * metalAlloyRegions[i][j].getTemperature();
-                    }
-                }
+            if (row > 0) {
+                metalSummation += metalAlloyRegions[row - 1][col].getPercentOfMetal3() * metalAlloyRegions[row - 1][col].getTemperature();
+            }
+            if (row < height - 1) {
+                metalSummation += metalAlloyRegions[row + 1][col].getPercentOfMetal3() * metalAlloyRegions[row + 1][col].getTemperature();
+            }
+            if (col > 0) {
+                metalSummation += metalAlloyRegions[row][col - 1].getPercentOfMetal3() * metalAlloyRegions[row][col - 1].getTemperature();
+            }
+            if (col < width - 1) {
+                metalSummation += metalAlloyRegions[row][col + 1].getPercentOfMetal3() * metalAlloyRegions[row][col + 1].getTemperature();
             }
         }
         return metalSummation;
