@@ -107,4 +107,12 @@ public class MetalAlloy {
         }
         return metalSummation;
     }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
 }

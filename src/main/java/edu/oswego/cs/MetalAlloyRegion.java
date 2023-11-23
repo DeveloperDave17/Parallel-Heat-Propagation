@@ -13,13 +13,13 @@ public class MetalAlloyRegion {
     public static final int RTHRESHOLD1 = 13;
     public static final int GTHRESHOLD1 = 21;
     public static final int BTHRESHOLD1 = 235;
-    public static final double TEMPTHRESHOLD2 = 350;
+    public static final double TEMPTHRESHOLD2 = 900;
     public static final int RTHRESHOLD2 = 253;
     public static final int GTHRESHOLD2 = 29;
     public static final int BTHRESHOLD2 = 29;
-    public static final double TEMPTHRESHOLD3 = 700;
+    public static final double TEMPTHRESHOLD3 = 1500;
     public static final int RTHRESHOLD3 = 247;
-    public static final int GTHRESHOLD3 = 255;
+    public static final int GTHRESHOLD3 = 250;
     public static final int BTHRESHOLD3 = 143;
     private double percentOfMetal1;
     private double percentOfMetal2;
@@ -80,12 +80,12 @@ public class MetalAlloyRegion {
         if (temperature <= TEMPTHRESHOLD1) {
             r = RTHRESHOLD1;
             g = GTHRESHOLD1;
-            b = BTHRESHOLD3;
-        } else if (temperature <= TEMPTHRESHOLD2) {
+            b = BTHRESHOLD1;
+        } else if (temperature < TEMPTHRESHOLD2) {
             r = calcColorBetweenThreshold(temperature, RTHRESHOLD1, RTHRESHOLD2, TEMPTHRESHOLD1, TEMPTHRESHOLD2);
             g = calcColorBetweenThreshold(temperature, GTHRESHOLD1, GTHRESHOLD2, TEMPTHRESHOLD1, TEMPTHRESHOLD2);
             b = calcColorBetweenThreshold(temperature, BTHRESHOLD1, BTHRESHOLD2, TEMPTHRESHOLD1, TEMPTHRESHOLD2);
-        } else if (temperature <= TEMPTHRESHOLD3) {
+        } else if (temperature < TEMPTHRESHOLD3) {
             r = calcColorBetweenThreshold(temperature, RTHRESHOLD2, RTHRESHOLD3, TEMPTHRESHOLD2, TEMPTHRESHOLD3);
             g = calcColorBetweenThreshold(temperature, GTHRESHOLD2, GTHRESHOLD3, TEMPTHRESHOLD2, TEMPTHRESHOLD3);
             b = calcColorBetweenThreshold(temperature, BTHRESHOLD2, BTHRESHOLD3, TEMPTHRESHOLD2, TEMPTHRESHOLD3);
@@ -107,6 +107,6 @@ public class MetalAlloyRegion {
      * @return The calculated color value for a rgb value of the alloy.
      */
     public int calcColorBetweenThreshold(double temperature, int colorThreshold1, int colorThreshold2, double tempThreshold1, double tempThreshold2) {
-        return (int)Math.floor(colorThreshold1 + (temperature * (colorThreshold2 - colorThreshold1) / (tempThreshold2 - tempThreshold1)));
+        return (int)Math.floor(colorThreshold1 + (temperature * (colorThreshold2 - colorThreshold1) / (tempThreshold2)));
     }
 }

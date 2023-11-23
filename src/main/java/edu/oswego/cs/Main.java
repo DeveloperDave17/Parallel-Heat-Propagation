@@ -7,16 +7,16 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
 
-    private static final double DEFAULT_S = 30.0;
-    private static final double DEFAULT_T = 70.0;
+    private static final double DEFAULT_S = 1200;
+    private static final double DEFAULT_T = 1200;
     private static final double DEFAULT_C1 = 0.75;
     private static final double DEFAULT_C2 = 1.0;
     private static final double DEFAULT_C3 = 1.25;
-    private static final int DEFAULT_HEIGHT = 1000;
-    private static final int DEFAULT_WIDTH = 4000;
-    private static final int DEFAULT_THRESHOLD = 1000;
+    private static final int DEFAULT_HEIGHT = 100;
+    private static final int DEFAULT_WIDTH = 400;
+    private static final int DEFAULT_THRESHOLD = 10000;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         // How much the top left corner will be heated up at the beginning of each phase
         final double S;
         if (args.length > 0) {
@@ -70,6 +70,7 @@ public class Main {
         } else {
             THRESHOLD = DEFAULT_THRESHOLD;
         }
+        runSimulation(S, T, C1, C2, C3, HEIGHT, WIDTH, THRESHOLD);
     }
 
     public static void runSimulation(double s, double t, double c1, double c2, double c3, int height, int width, int threshold) throws SecurityException, InterruptedException {
@@ -77,18 +78,21 @@ public class Main {
         final MetalAlloy alloyB = new MetalAlloy(height, width, c1, c2, c3);
         final Phaser quadrantPhaser = new Phaser();
         final Phaser regionPhaser = new Phaser();
+        MetalAlloyView metalAlloyView = new MetalAlloyView(height, width);
+        metalAlloyView.displayRegions(alloyA);
+        metalAlloyView.display();
+        alloyA.setTempOfRegion(s, 0, 0);
+        alloyA.setTempOfRegion(t, height - 1, width - 1);
+        alloyA.getMetalAlloyRegion(0, 0).calcRGB();
+        alloyA.getMetalAlloyRegion(height - 1, width - 1).calcRGB();
+        alloyB.setTempOfRegion(s, 0, 0);
+        alloyB.setTempOfRegion(t, height - 1, width - 1);
+        alloyB.getMetalAlloyRegion(0, 0).calcRGB();
+        alloyB.getMetalAlloyRegion(height - 1, width - 1).calcRGB();
         for (int currentIteration = 1; currentIteration <= threshold; currentIteration++) {
             ExecutorService workStealingPool = new ForkJoinPool();
             // Swap which alloy is the preOperationAlloy
             boolean useAForPreOp = currentIteration % 2 == 0;
-            // Increase temperature of each corner
-            if (useAForPreOp) {
-                alloyA.increaseTempOfRegion(s, 0, 0);
-                alloyA.increaseTempOfRegion(t, height - 1, width - 1);
-            } else {
-                alloyB.increaseTempOfRegion(s, 0, 0);
-                alloyB.increaseTempOfRegion(t, height - 1, width - 1);
-            }
             // Update the Metal Alloy
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
@@ -117,6 +121,12 @@ public class Main {
             }
             workStealingPool.shutdown();
             workStealingPool.awaitTermination(10, TimeUnit.SECONDS);
+            // Display update
+            if (useAForPreOp) {
+                metalAlloyView.displayRegions(alloyB);
+            } else {
+                metalAlloyView.displayRegions(alloyA);
+            }
         }
 
     }
