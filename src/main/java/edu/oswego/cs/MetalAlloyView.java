@@ -9,7 +9,7 @@ public class MetalAlloyView {
     private final int DEFAULT_REGION_SIZE = 4;
 
     public MetalAlloyView(int height, int width) {
-        metalAlloyFrame = new JFrame("Best Factory Layout");
+        metalAlloyFrame = new JFrame("Metal Alloy");
         int taskBarHeight = Toolkit.getDefaultToolkit().getScreenInsets(metalAlloyFrame.getGraphicsConfiguration()).top;
         metalAlloyFrame.setSize(DEFAULT_REGION_SIZE * width, DEFAULT_REGION_SIZE * height + taskBarHeight);
         metalAlloyFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
