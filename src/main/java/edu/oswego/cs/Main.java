@@ -12,8 +12,8 @@ public class Main {
     private static final double DEFAULT_C1 = 0.75;
     private static final double DEFAULT_C2 = 1.0;
     private static final double DEFAULT_C3 = 1.25;
-    private static final int DEFAULT_HEIGHT = 100;
-    private static final int DEFAULT_WIDTH = 400;
+    private static final int DEFAULT_HEIGHT = 300;
+    private static final int DEFAULT_WIDTH = 1200;
     private static final int DEFAULT_THRESHOLD = 10000;
 
     public static void main(String[] args) throws Exception {

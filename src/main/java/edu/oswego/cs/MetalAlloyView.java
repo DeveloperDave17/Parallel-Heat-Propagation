@@ -6,7 +6,7 @@ import java.awt.*;
 public class MetalAlloyView {
 
     private final JFrame metalAlloyFrame;
-    private final int DEFAULT_REGION_SIZE = 4;
+    private final int DEFAULT_REGION_SIZE = 1;
 
     public MetalAlloyView(int height, int width) {
         metalAlloyFrame = new JFrame("Metal Alloy");
