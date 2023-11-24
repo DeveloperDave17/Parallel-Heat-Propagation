@@ -1,9 +1,7 @@
 package edu.oswego.cs;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.Phaser;
-import java.util.concurrent.TimeUnit;
+import java.util.Random;
+import java.util.concurrent.*;
 
 public class Main {
 
@@ -12,8 +10,8 @@ public class Main {
     private static final double DEFAULT_C1 = 0.75;
     private static final double DEFAULT_C2 = 1.0;
     private static final double DEFAULT_C3 = 1.25;
-    private static final int DEFAULT_HEIGHT = 300;
-    private static final int DEFAULT_WIDTH = 1200;
+    private static final int DEFAULT_HEIGHT = 200;
+    private static final int DEFAULT_WIDTH = 800;
     private static final int DEFAULT_THRESHOLD = 10000;
 
     public static void main(String[] args) throws Exception {
@@ -120,12 +118,10 @@ public class Main {
                 }
             }
             workStealingPool.shutdown();
-            workStealingPool.awaitTermination(10, TimeUnit.SECONDS);
-            // Display update
+            workStealingPool.awaitTermination(1, TimeUnit.SECONDS);
+            // Display update every time B is used to store the most up to date version. Helps with refresh rate
             if (useAForPreOp) {
                 metalAlloyView.displayRegions(alloyB);
-            } else {
-                metalAlloyView.displayRegions(alloyA);
             }
         }
 
