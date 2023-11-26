@@ -33,8 +33,8 @@ public class MetalAlloyRegion {
         double baseMetalPercent = 0.33333;
         // varying metal composition
         percentOfMetal1 = baseMetalPercent +  (baseMetalPercent * random.nextDouble(-variance, variance));
-        percentOfMetal2 = baseMetalPercent +  (baseMetalPercent * random.nextDouble(-variance, variance));
-        percentOfMetal3 = 1.0 - (percentOfMetal2 + percentOfMetal1);
+        percentOfMetal3 = baseMetalPercent +  (baseMetalPercent * random.nextDouble(-variance, variance));
+        percentOfMetal2 = 1.0 - (percentOfMetal3 + percentOfMetal1);
     }
 
     public void setTemperature(double temperature) {
