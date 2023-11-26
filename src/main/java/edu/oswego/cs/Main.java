@@ -14,6 +14,10 @@ public class Main {
     private static final int DEFAULT_WIDTH = 800;
     private static final int DEFAULT_THRESHOLD = 10000;
 
+    private static volatile MetalAlloy alloyToBePainted;
+
+    private static volatile boolean simulationIsActive;
+
     public static void main(String[] args) throws Exception {
         // How much the top left corner will be heated up at the beginning of each phase
         final double S;
@@ -73,12 +77,27 @@ public class Main {
 
     public static void runSimulation(double s, double t, double c1, double c2, double c3, int height, int width, int threshold) throws SecurityException, InterruptedException {
         final MetalAlloy alloyA = new MetalAlloy(height, width, c1, c2, c3);
+        // Display Alloy A first
+        alloyToBePainted = alloyA;
         final MetalAlloy alloyB = new MetalAlloy(height, width, c1, c2, c3);
         final Phaser quadrantPhaser = new Phaser();
         final Phaser regionPhaser = new Phaser();
         MetalAlloyView metalAlloyView = new MetalAlloyView(height, width);
         metalAlloyView.displayRegions(alloyA);
         metalAlloyView.display();
+        ExecutorService displayService = Executors.newFixedThreadPool(1);
+        // Activate the display for the simulation
+        simulationIsActive = true;
+        displayService.submit(() -> {
+            while (simulationIsActive) {
+                metalAlloyView.displayRegions(alloyToBePainted);
+                try {
+                    Thread.sleep(30);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
         alloyA.setTempOfRegion(s, 0, 0);
         alloyA.setTempOfRegion(t, height - 1, width - 1);
         alloyA.getMetalAlloyRegion(0, 0).calcRGB();
@@ -119,11 +138,16 @@ public class Main {
             }
             workStealingPool.shutdown();
             workStealingPool.awaitTermination(1, TimeUnit.SECONDS);
-            // Display update every time B is used to store the most up to date version. Helps with refresh rate
+            // Display updates
             if (useAForPreOp) {
-                metalAlloyView.displayRegions(alloyB);
+                alloyToBePainted = alloyB;
+            } else {
+                alloyToBePainted = alloyA;
             }
         }
-
+        // Inform the gui that it no longer needs to refresh
+        simulationIsActive = false;
+        displayService.shutdown();
+        displayService.awaitTermination(1, TimeUnit.SECONDS);
     }
 }
