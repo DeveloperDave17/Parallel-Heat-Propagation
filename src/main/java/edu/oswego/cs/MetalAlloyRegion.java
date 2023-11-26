@@ -6,9 +6,9 @@ import java.util.concurrent.ThreadLocalRandom;
 public class MetalAlloyRegion {
 
     private double temperature;
-    private int r;
-    private int g;
-    private int b;
+    private volatile int r;
+    private volatile int g;
+    private volatile int b;
     public static final double TEMPTHRESHOLD1 = 0;
     public static final int RTHRESHOLD1 = 13;
     public static final int GTHRESHOLD1 = 21;

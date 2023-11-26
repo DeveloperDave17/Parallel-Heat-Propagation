@@ -27,6 +27,7 @@ public class MetalAlloy {
             for (int j = 0; j < width; j++) {
                 // Initialize all regions of the alloy to have a temperature of 0 degrees Celsius.
                 metalAlloyRegions[i][j] = new MetalAlloyRegion(0);
+                metalAlloyRegions[i][j].calcRGB();
             }
         }
     }

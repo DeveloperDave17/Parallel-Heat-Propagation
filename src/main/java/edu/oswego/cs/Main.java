@@ -92,7 +92,7 @@ public class Main {
             while (simulationIsActive) {
                 metalAlloyView.displayRegions(alloyToBePainted);
                 try {
-                    Thread.sleep(30);
+                    Thread.sleep(40);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
