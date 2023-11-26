@@ -1,5 +1,9 @@
 package edu.oswego.cs;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
+
 public class MetalAlloy {
 
     private int height;
@@ -114,5 +118,237 @@ public class MetalAlloy {
 
     public int getWidth() {
         return width;
+    }
+
+    public void calculateQuadrant(MetalAlloy alloyToStoreResults, Quadrant quadrantToRun) {
+        ExecutorService workStealingPool = new ForkJoinPool();
+        // used to specify the dimensions of the quadrant.
+        int quadrantHeight;
+        int quadrantWidth;
+        switch (quadrantToRun) {
+            case ALL:
+                for (int i = 0; i < height; i++) {
+                    for (int j = 0; j < width; j++) {
+                        if (i == 0 && i == j) {
+                            continue;
+                        }
+                        if (i == height - 1 && j == width - 1) {
+                            continue;
+                        }
+                        final int ROW = i;
+                        final int COL = j;
+                        workStealingPool.submit(() -> {
+                            double result = calculateNewTempForRegion(ROW, COL);
+                            alloyToStoreResults.setTempOfRegion(result, ROW, COL);
+                            alloyToStoreResults.getMetalAlloyRegion(ROW, COL).calcRGB();
+                        });
+                    }
+                }
+                break;
+
+            case TOP_LEFT:
+                quadrantHeight = height / 3;
+                quadrantWidth = width / 3;
+                for (int i = 0; i < quadrantHeight; i++) {
+                    for (int j = 0; j < quadrantWidth; j++) {
+                        if (i == 0 && i == j) {
+                            continue;
+                        }
+                        if (i == height - 1 && j == width - 1) {
+                            continue;
+                        }
+                        final int ROW = i;
+                        final int COL = j;
+                        workStealingPool.submit(() -> {
+                            double result = calculateNewTempForRegion(ROW, COL);
+                            alloyToStoreResults.setTempOfRegion(result, ROW, COL);
+                            alloyToStoreResults.getMetalAlloyRegion(ROW, COL).calcRGB();
+                        });
+                    }
+                }
+                break;
+
+            case TOP:
+                quadrantHeight = height / 3;
+                quadrantWidth = 2 * (width / 3);
+                for (int i = 0; i < quadrantHeight; i++) {
+                    for (int j = width / 3; j <  quadrantWidth; j++) {
+                        if (i == 0 && i == j) {
+                            continue;
+                        }
+                        if (i == height - 1 && j == width - 1) {
+                            continue;
+                        }
+                        final int ROW = i;
+                        final int COL = j;
+                        workStealingPool.submit(() -> {
+                            double result = calculateNewTempForRegion(ROW, COL);
+                            alloyToStoreResults.setTempOfRegion(result, ROW, COL);
+                            alloyToStoreResults.getMetalAlloyRegion(ROW, COL).calcRGB();
+                        });
+                    }
+                }
+                break;
+
+            case TOP_RIGHT:
+                quadrantHeight = height / 3;
+                quadrantWidth = width;
+                for (int i = 0; i < quadrantHeight; i++) {
+                    for (int j = 2 * (width / 3); j < quadrantWidth; j++) {
+                        if (i == 0 && i == j) {
+                            continue;
+                        }
+                        if (i == height - 1 && j == width - 1) {
+                            continue;
+                        }
+                        final int ROW = i;
+                        final int COL = j;
+                        workStealingPool.submit(() -> {
+                            double result = calculateNewTempForRegion(ROW, COL);
+                            alloyToStoreResults.setTempOfRegion(result, ROW, COL);
+                            alloyToStoreResults.getMetalAlloyRegion(ROW, COL).calcRGB();
+                        });
+                    }
+                }
+                break;
+
+            case LEFT:
+                quadrantHeight = 2 * (height / 3);
+                quadrantWidth = width / 3;
+                for (int i = height / 3; i < quadrantHeight; i++) {
+                    for (int j = 0; j < quadrantWidth; j++) {
+                        if (i == 0 && i == j) {
+                            continue;
+                        }
+                        if (i == height - 1 && j == width - 1) {
+                            continue;
+                        }
+                        final int ROW = i;
+                        final int COL = j;
+                        workStealingPool.submit(() -> {
+                            double result = calculateNewTempForRegion(ROW, COL);
+                            alloyToStoreResults.setTempOfRegion(result, ROW, COL);
+                            alloyToStoreResults.getMetalAlloyRegion(ROW, COL).calcRGB();
+                        });
+                    }
+                }
+                break;
+
+            case MIDDLE:
+                quadrantHeight = 2 * (height / 3);
+                quadrantWidth = 2 * (width / 3);
+                for (int i = height / 3; i < quadrantHeight; i++) {
+                    for (int j = width / 3; j < quadrantWidth; j++) {
+                        if (i == 0 && i == j) {
+                            continue;
+                        }
+                        if (i == height - 1 && j == width - 1) {
+                            continue;
+                        }
+                        final int ROW = i;
+                        final int COL = j;
+                        workStealingPool.submit(() -> {
+                            double result = calculateNewTempForRegion(ROW, COL);
+                            alloyToStoreResults.setTempOfRegion(result, ROW, COL);
+                            alloyToStoreResults.getMetalAlloyRegion(ROW, COL).calcRGB();
+                        });
+                    }
+                }
+                break;
+
+            case RIGHT:
+                quadrantHeight = 2 * (height / 3);
+                quadrantWidth = width;
+                for (int i = height / 3; i < quadrantHeight; i++) {
+                    for (int j = 2 * (width / 3); j < quadrantWidth; j++) {
+                        if (i == 0 && i == j) {
+                            continue;
+                        }
+                        if (i == height - 1 && j == width - 1) {
+                            continue;
+                        }
+                        final int ROW = i;
+                        final int COL = j;
+                        workStealingPool.submit(() -> {
+                            double result = calculateNewTempForRegion(ROW, COL);
+                            alloyToStoreResults.setTempOfRegion(result, ROW, COL);
+                            alloyToStoreResults.getMetalAlloyRegion(ROW, COL).calcRGB();
+                        });
+                    }
+                }
+                break;
+
+            case BOTTOM_LEFT:
+                quadrantHeight = height;
+                quadrantWidth = width / 3;
+                for (int i = 2 * (height / 3); i < quadrantHeight; i++) {
+                    for (int j = 0; j < quadrantWidth; j++) {
+                        if (i == 0 && i == j) {
+                            continue;
+                        }
+                        if (i == height - 1 && j == width - 1) {
+                            continue;
+                        }
+                        final int ROW = i;
+                        final int COL = j;
+                        workStealingPool.submit(() -> {
+                            double result = calculateNewTempForRegion(ROW, COL);
+                            alloyToStoreResults.setTempOfRegion(result, ROW, COL);
+                            alloyToStoreResults.getMetalAlloyRegion(ROW, COL).calcRGB();
+                        });
+                    }
+                }
+                break;
+
+            case BOTTOM:
+                quadrantHeight = height;
+                quadrantWidth = 2 * (width / 3);
+                for (int i = 2 * (height / 3); i < quadrantHeight; i++) {
+                    for (int j = width / 3; j < quadrantWidth; j++) {
+                        if (i == 0 && i == j) {
+                            continue;
+                        }
+                        if (i == height - 1 && j == width - 1) {
+                            continue;
+                        }
+                        final int ROW = i;
+                        final int COL = j;
+                        workStealingPool.submit(() -> {
+                            double result = calculateNewTempForRegion(ROW, COL);
+                            alloyToStoreResults.setTempOfRegion(result, ROW, COL);
+                            alloyToStoreResults.getMetalAlloyRegion(ROW, COL).calcRGB();
+                        });
+                    }
+                }
+                break;
+
+            case BOTTOM_RIGHT:
+                quadrantHeight = height;
+                quadrantWidth = width;
+                for (int i = 2 * (height / 3); i < quadrantHeight; i++) {
+                    for (int j = 2 * (width / 3); j < quadrantWidth; j++) {
+                        if (i == 0 && i == j) {
+                            continue;
+                        }
+                        if (i == height - 1 && j == width - 1) {
+                            continue;
+                        }
+                        final int ROW = i;
+                        final int COL = j;
+                        workStealingPool.submit(() -> {
+                            double result = calculateNewTempForRegion(ROW, COL);
+                            alloyToStoreResults.setTempOfRegion(result, ROW, COL);
+                            alloyToStoreResults.getMetalAlloyRegion(ROW, COL).calcRGB();
+                        });
+                    }
+                }
+                break;
+        }
+        workStealingPool.shutdown();
+        try {
+            workStealingPool.awaitTermination(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

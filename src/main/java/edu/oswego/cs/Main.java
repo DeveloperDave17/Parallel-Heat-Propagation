@@ -107,37 +107,68 @@ public class Main {
         alloyB.getMetalAlloyRegion(0, 0).calcRGB();
         alloyB.getMetalAlloyRegion(height - 1, width - 1).calcRGB();
         for (int currentIteration = 1; currentIteration <= threshold; currentIteration++) {
-            ExecutorService workStealingPool = new ForkJoinPool();
+            ExecutorService quadrantService = Executors.newFixedThreadPool(9);
             // Swap which alloy is the preOperationAlloy
             boolean useAForPreOp = currentIteration % 2 == 0;
-            // Update the Metal Alloy
-            for (int i = 0; i < height; i++) {
-                for (int j = 0; j < width; j++) {
-                    if (i == 0 && i == j) {
-                        continue;
-                    }
-                    if (i == height - 1 && j == width - 1) {
-                        continue;
-                    }
-                    final int ROW = i;
-                    final int COL = j;
-                    if (useAForPreOp) {
-                        workStealingPool.submit(() -> {
-                            double result = alloyA.calculateNewTempForRegion(ROW, COL);
-                            alloyB.setTempOfRegion(result, ROW, COL);
-                            alloyB.getMetalAlloyRegion(ROW, COL).calcRGB();
-                        });
-                    } else {
-                        workStealingPool.submit(() -> {
-                            double result = alloyB.calculateNewTempForRegion(ROW, COL);
-                            alloyA.setTempOfRegion(result, ROW, COL);
-                            alloyA.getMetalAlloyRegion(ROW, COL).calcRGB();
-                        });
-                    }
-                }
+            if (useAForPreOp) {
+                quadrantService.submit(() -> {
+                    alloyA.calculateQuadrant(alloyB, Quadrant.TOP_LEFT);
+                });
+                quadrantService.submit(() -> {
+                    alloyA.calculateQuadrant(alloyB, Quadrant.TOP);
+                });
+                quadrantService.submit(() -> {
+                    alloyA.calculateQuadrant(alloyB, Quadrant.TOP_RIGHT);
+                });
+                quadrantService.submit(() -> {
+                    alloyA.calculateQuadrant(alloyB, Quadrant.LEFT);
+                });
+                quadrantService.submit(() -> {
+                    alloyA.calculateQuadrant(alloyB, Quadrant.MIDDLE);
+                });
+                quadrantService.submit(() -> {
+                    alloyA.calculateQuadrant(alloyB, Quadrant.RIGHT);
+                });
+                quadrantService.submit(() -> {
+                    alloyA.calculateQuadrant(alloyB, Quadrant.BOTTOM_LEFT);
+                });
+                quadrantService.submit(() -> {
+                    alloyA.calculateQuadrant(alloyB, Quadrant.BOTTOM);
+                });
+                quadrantService.submit(() -> {
+                    alloyA.calculateQuadrant(alloyB, Quadrant.BOTTOM_RIGHT);
+                });
+            } else {
+                quadrantService.submit(() -> {
+                    alloyB.calculateQuadrant(alloyA, Quadrant.TOP_LEFT);
+                });
+                quadrantService.submit(() -> {
+                    alloyB.calculateQuadrant(alloyA, Quadrant.TOP);
+                });
+                quadrantService.submit(() -> {
+                    alloyB.calculateQuadrant(alloyA, Quadrant.TOP_RIGHT);
+                });
+                quadrantService.submit(() -> {
+                    alloyB.calculateQuadrant(alloyA, Quadrant.LEFT);
+                });
+                quadrantService.submit(() -> {
+                    alloyB.calculateQuadrant(alloyA, Quadrant.MIDDLE);
+                });
+                quadrantService.submit(() -> {
+                    alloyB.calculateQuadrant(alloyA, Quadrant.RIGHT);
+                });
+                quadrantService.submit(() -> {
+                    alloyB.calculateQuadrant(alloyA, Quadrant.BOTTOM_LEFT);
+                });
+                quadrantService.submit(() -> {
+                    alloyB.calculateQuadrant(alloyA, Quadrant.BOTTOM);
+                });
+                quadrantService.submit(() -> {
+                    alloyB.calculateQuadrant(alloyA, Quadrant.BOTTOM_RIGHT);
+                });
             }
-            workStealingPool.shutdown();
-            workStealingPool.awaitTermination(1, TimeUnit.SECONDS);
+            quadrantService.shutdown();
+            quadrantService.awaitTermination(1, TimeUnit.SECONDS);
             // Display updates
             if (useAForPreOp) {
                 alloyToBePainted = alloyB;
