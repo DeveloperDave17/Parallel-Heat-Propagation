@@ -14,6 +14,9 @@ public class MetalAlloy {
     private double c2;
     private double c3;
 
+    // Constraints for Tasks
+    private final int NUM_CALCULATIONS_PER_THREAD = 4;
+
     private MetalAlloyRegion[][] metalAlloyRegions;
 
     public MetalAlloy(int height, int width, double c1, double c2, double c3) {
@@ -45,6 +48,14 @@ public class MetalAlloy {
     }
 
     public double calculateNewTempForRegion(int row, int col) {
+        // Don't change the temperature of the top left corner
+        if (row == col && row == 0) {
+            return metalAlloyRegions[row][col].getTemperature();
+        }
+        // Don't change the temperature of the bottom right corner
+        if (row == height - 1 && col == width - 1) {
+            return metalAlloyRegions[row][col].getTemperature();
+        }
         double metal1TempSummation = getMetalSummation(row, col, 1);
         double metal2TempSummation = getMetalSummation(row, col, 2);
         double metal3TempSummation = getMetalSummation(row, col, 3);
@@ -134,19 +145,23 @@ public class MetalAlloy {
         switch (quadrantToRun) {
             case ALL:
                 for (int i = 0; i < height; i++) {
-                    for (int j = 0; j < width; j++) {
-                        if (i == 0 && i == j) {
-                            continue;
-                        }
-                        if (i == height - 1 && j == width - 1) {
-                            continue;
-                        }
+                    for (int j = 0; j < width; j += NUM_CALCULATIONS_PER_THREAD) {
                         final int ROW = i;
                         final int COL = j;
+                        final int COLEND;
+                        // Possible exclusive end of the range of columns a task is in charge of (8 cells)
+                        int possibleColCalcEnd = j + NUM_CALCULATIONS_PER_THREAD;
+                        if (width <= possibleColCalcEnd) {
+                            COLEND = possibleColCalcEnd;
+                        } else {
+                            COLEND = width;
+                        }
                         workStealingPool.submit(() -> {
-                            double result = calculateNewTempForRegion(ROW, COL);
-                            alloyToStoreResults.setTempOfRegion(result, ROW, COL);
-                            alloyToStoreResults.getMetalAlloyRegion(ROW, COL).calcRGB();
+                            for (int currentCol = COL; currentCol < COLEND; currentCol++) {
+                                double result = calculateNewTempForRegion(ROW, currentCol);
+                                alloyToStoreResults.setTempOfRegion(result, ROW, currentCol);
+                                alloyToStoreResults.getMetalAlloyRegion(ROW, currentCol).calcRGB();
+                            }
                         });
                     }
                 }
@@ -156,19 +171,23 @@ public class MetalAlloy {
                 quadrantHeight = height / 3;
                 quadrantWidth = width / 3;
                 for (int i = 0; i < quadrantHeight; i++) {
-                    for (int j = 0; j < quadrantWidth; j++) {
-                        if (i == 0 && i == j) {
-                            continue;
-                        }
-                        if (i == height - 1 && j == width - 1) {
-                            continue;
-                        }
+                    for (int j = 0; j < quadrantWidth; j += NUM_CALCULATIONS_PER_THREAD) {
                         final int ROW = i;
                         final int COL = j;
+                        final int COLEND;
+                        // Possible exclusive end of the range of columns a task is in charge of (8 cells)
+                        int possibleColCalcEnd = j + NUM_CALCULATIONS_PER_THREAD;
+                        if (width <= possibleColCalcEnd) {
+                            COLEND = possibleColCalcEnd;
+                        } else {
+                            COLEND = width;
+                        }
                         workStealingPool.submit(() -> {
-                            double result = calculateNewTempForRegion(ROW, COL);
-                            alloyToStoreResults.setTempOfRegion(result, ROW, COL);
-                            alloyToStoreResults.getMetalAlloyRegion(ROW, COL).calcRGB();
+                            for (int currentCol = COL; currentCol < COLEND; currentCol++) {
+                                double result = calculateNewTempForRegion(ROW, currentCol);
+                                alloyToStoreResults.setTempOfRegion(result, ROW, currentCol);
+                                alloyToStoreResults.getMetalAlloyRegion(ROW, currentCol).calcRGB();
+                            }
                         });
                     }
                 }
@@ -178,19 +197,23 @@ public class MetalAlloy {
                 quadrantHeight = height / 3;
                 quadrantWidth = 2 * (width / 3);
                 for (int i = 0; i < quadrantHeight; i++) {
-                    for (int j = width / 3; j <  quadrantWidth; j++) {
-                        if (i == 0 && i == j) {
-                            continue;
-                        }
-                        if (i == height - 1 && j == width - 1) {
-                            continue;
-                        }
+                    for (int j = width / 3; j <  quadrantWidth; j += NUM_CALCULATIONS_PER_THREAD) {
                         final int ROW = i;
                         final int COL = j;
+                        final int COLEND;
+                        // Possible exclusive end of the range of columns a task is in charge of (8 cells)
+                        int possibleColCalcEnd = j + NUM_CALCULATIONS_PER_THREAD;
+                        if (width <= possibleColCalcEnd) {
+                            COLEND = possibleColCalcEnd;
+                        } else {
+                            COLEND = width;
+                        }
                         workStealingPool.submit(() -> {
-                            double result = calculateNewTempForRegion(ROW, COL);
-                            alloyToStoreResults.setTempOfRegion(result, ROW, COL);
-                            alloyToStoreResults.getMetalAlloyRegion(ROW, COL).calcRGB();
+                            for (int currentCol = COL; currentCol < COLEND; currentCol++) {
+                                double result = calculateNewTempForRegion(ROW, currentCol);
+                                alloyToStoreResults.setTempOfRegion(result, ROW, currentCol);
+                                alloyToStoreResults.getMetalAlloyRegion(ROW, currentCol).calcRGB();
+                            }
                         });
                     }
                 }
@@ -200,19 +223,23 @@ public class MetalAlloy {
                 quadrantHeight = height / 3;
                 quadrantWidth = width;
                 for (int i = 0; i < quadrantHeight; i++) {
-                    for (int j = 2 * (width / 3); j < quadrantWidth; j++) {
-                        if (i == 0 && i == j) {
-                            continue;
-                        }
-                        if (i == height - 1 && j == width - 1) {
-                            continue;
-                        }
+                    for (int j = 2 * (width / 3); j < quadrantWidth; j += NUM_CALCULATIONS_PER_THREAD) {
                         final int ROW = i;
                         final int COL = j;
+                        final int COLEND;
+                        // Possible exclusive end of the range of columns a task is in charge of (8 cells)
+                        int possibleColCalcEnd = j + NUM_CALCULATIONS_PER_THREAD;
+                        if (width <= possibleColCalcEnd) {
+                            COLEND = possibleColCalcEnd;
+                        } else {
+                            COLEND = width;
+                        }
                         workStealingPool.submit(() -> {
-                            double result = calculateNewTempForRegion(ROW, COL);
-                            alloyToStoreResults.setTempOfRegion(result, ROW, COL);
-                            alloyToStoreResults.getMetalAlloyRegion(ROW, COL).calcRGB();
+                            for (int currentCol = COL; currentCol < COLEND; currentCol++) {
+                                double result = calculateNewTempForRegion(ROW, currentCol);
+                                alloyToStoreResults.setTempOfRegion(result, ROW, currentCol);
+                                alloyToStoreResults.getMetalAlloyRegion(ROW, currentCol).calcRGB();
+                            }
                         });
                     }
                 }
@@ -222,19 +249,23 @@ public class MetalAlloy {
                 quadrantHeight = 2 * (height / 3);
                 quadrantWidth = width / 3;
                 for (int i = height / 3; i < quadrantHeight; i++) {
-                    for (int j = 0; j < quadrantWidth; j++) {
-                        if (i == 0 && i == j) {
-                            continue;
-                        }
-                        if (i == height - 1 && j == width - 1) {
-                            continue;
-                        }
+                    for (int j = 0; j < quadrantWidth; j += NUM_CALCULATIONS_PER_THREAD) {
                         final int ROW = i;
                         final int COL = j;
+                        final int COLEND;
+                        // Possible exclusive end of the range of columns a task is in charge of (8 cells)
+                        int possibleColCalcEnd = j + NUM_CALCULATIONS_PER_THREAD;
+                        if (width <= possibleColCalcEnd) {
+                            COLEND = possibleColCalcEnd;
+                        } else {
+                            COLEND = width;
+                        }
                         workStealingPool.submit(() -> {
-                            double result = calculateNewTempForRegion(ROW, COL);
-                            alloyToStoreResults.setTempOfRegion(result, ROW, COL);
-                            alloyToStoreResults.getMetalAlloyRegion(ROW, COL).calcRGB();
+                            for (int currentCol = COL; currentCol < COLEND; currentCol++) {
+                                double result = calculateNewTempForRegion(ROW, currentCol);
+                                alloyToStoreResults.setTempOfRegion(result, ROW, currentCol);
+                                alloyToStoreResults.getMetalAlloyRegion(ROW, currentCol).calcRGB();
+                            }
                         });
                     }
                 }
@@ -244,19 +275,23 @@ public class MetalAlloy {
                 quadrantHeight = 2 * (height / 3);
                 quadrantWidth = 2 * (width / 3);
                 for (int i = height / 3; i < quadrantHeight; i++) {
-                    for (int j = width / 3; j < quadrantWidth; j++) {
-                        if (i == 0 && i == j) {
-                            continue;
-                        }
-                        if (i == height - 1 && j == width - 1) {
-                            continue;
-                        }
+                    for (int j = width / 3; j < quadrantWidth; j += NUM_CALCULATIONS_PER_THREAD) {
                         final int ROW = i;
                         final int COL = j;
+                        final int COLEND;
+                        // Possible exclusive end of the range of columns a task is in charge of (8 cells)
+                        int possibleColCalcEnd = j + NUM_CALCULATIONS_PER_THREAD;
+                        if (width <= possibleColCalcEnd) {
+                            COLEND = possibleColCalcEnd;
+                        } else {
+                            COLEND = width;
+                        }
                         workStealingPool.submit(() -> {
-                            double result = calculateNewTempForRegion(ROW, COL);
-                            alloyToStoreResults.setTempOfRegion(result, ROW, COL);
-                            alloyToStoreResults.getMetalAlloyRegion(ROW, COL).calcRGB();
+                            for (int currentCol = COL; currentCol < COLEND; currentCol++) {
+                                double result = calculateNewTempForRegion(ROW, currentCol);
+                                alloyToStoreResults.setTempOfRegion(result, ROW, currentCol);
+                                alloyToStoreResults.getMetalAlloyRegion(ROW, currentCol).calcRGB();
+                            }
                         });
                     }
                 }
@@ -266,19 +301,23 @@ public class MetalAlloy {
                 quadrantHeight = 2 * (height / 3);
                 quadrantWidth = width;
                 for (int i = height / 3; i < quadrantHeight; i++) {
-                    for (int j = 2 * (width / 3); j < quadrantWidth; j++) {
-                        if (i == 0 && i == j) {
-                            continue;
-                        }
-                        if (i == height - 1 && j == width - 1) {
-                            continue;
-                        }
+                    for (int j = 2 * (width / 3); j < quadrantWidth; j += NUM_CALCULATIONS_PER_THREAD) {
                         final int ROW = i;
                         final int COL = j;
+                        final int COLEND;
+                        // Possible exclusive end of the range of columns a task is in charge of (8 cells)
+                        int possibleColCalcEnd = j + NUM_CALCULATIONS_PER_THREAD;
+                        if (width <= possibleColCalcEnd) {
+                            COLEND = possibleColCalcEnd;
+                        } else {
+                            COLEND = width;
+                        }
                         workStealingPool.submit(() -> {
-                            double result = calculateNewTempForRegion(ROW, COL);
-                            alloyToStoreResults.setTempOfRegion(result, ROW, COL);
-                            alloyToStoreResults.getMetalAlloyRegion(ROW, COL).calcRGB();
+                            for (int currentCol = COL; currentCol < COLEND; currentCol++) {
+                                double result = calculateNewTempForRegion(ROW, currentCol);
+                                alloyToStoreResults.setTempOfRegion(result, ROW, currentCol);
+                                alloyToStoreResults.getMetalAlloyRegion(ROW, currentCol).calcRGB();
+                            }
                         });
                     }
                 }
@@ -288,19 +327,23 @@ public class MetalAlloy {
                 quadrantHeight = height;
                 quadrantWidth = width / 3;
                 for (int i = 2 * (height / 3); i < quadrantHeight; i++) {
-                    for (int j = 0; j < quadrantWidth; j++) {
-                        if (i == 0 && i == j) {
-                            continue;
-                        }
-                        if (i == height - 1 && j == width - 1) {
-                            continue;
-                        }
+                    for (int j = 0; j < quadrantWidth; j += NUM_CALCULATIONS_PER_THREAD) {
                         final int ROW = i;
                         final int COL = j;
+                        final int COLEND;
+                        // Possible exclusive end of the range of columns a task is in charge of (8 cells)
+                        int possibleColCalcEnd = j + NUM_CALCULATIONS_PER_THREAD;
+                        if (width <= possibleColCalcEnd) {
+                            COLEND = possibleColCalcEnd;
+                        } else {
+                            COLEND = width;
+                        }
                         workStealingPool.submit(() -> {
-                            double result = calculateNewTempForRegion(ROW, COL);
-                            alloyToStoreResults.setTempOfRegion(result, ROW, COL);
-                            alloyToStoreResults.getMetalAlloyRegion(ROW, COL).calcRGB();
+                            for (int currentCol = COL; currentCol < COLEND; currentCol++) {
+                                double result = calculateNewTempForRegion(ROW, currentCol);
+                                alloyToStoreResults.setTempOfRegion(result, ROW, currentCol);
+                                alloyToStoreResults.getMetalAlloyRegion(ROW, currentCol).calcRGB();
+                            }
                         });
                     }
                 }
@@ -310,19 +353,23 @@ public class MetalAlloy {
                 quadrantHeight = height;
                 quadrantWidth = 2 * (width / 3);
                 for (int i = 2 * (height / 3); i < quadrantHeight; i++) {
-                    for (int j = width / 3; j < quadrantWidth; j++) {
-                        if (i == 0 && i == j) {
-                            continue;
-                        }
-                        if (i == height - 1 && j == width - 1) {
-                            continue;
-                        }
+                    for (int j = width / 3; j < quadrantWidth; j += NUM_CALCULATIONS_PER_THREAD) {
                         final int ROW = i;
                         final int COL = j;
+                        final int COLEND;
+                        // Possible exclusive end of the range of columns a task is in charge of (8 cells)
+                        int possibleColCalcEnd = j + NUM_CALCULATIONS_PER_THREAD;
+                        if (width <= possibleColCalcEnd) {
+                            COLEND = possibleColCalcEnd;
+                        } else {
+                            COLEND = width;
+                        }
                         workStealingPool.submit(() -> {
-                            double result = calculateNewTempForRegion(ROW, COL);
-                            alloyToStoreResults.setTempOfRegion(result, ROW, COL);
-                            alloyToStoreResults.getMetalAlloyRegion(ROW, COL).calcRGB();
+                            for (int currentCol = COL; currentCol < COLEND; currentCol++) {
+                                double result = calculateNewTempForRegion(ROW, currentCol);
+                                alloyToStoreResults.setTempOfRegion(result, ROW, currentCol);
+                                alloyToStoreResults.getMetalAlloyRegion(ROW, currentCol).calcRGB();
+                            }
                         });
                     }
                 }
@@ -332,19 +379,23 @@ public class MetalAlloy {
                 quadrantHeight = height;
                 quadrantWidth = width;
                 for (int i = 2 * (height / 3); i < quadrantHeight; i++) {
-                    for (int j = 2 * (width / 3); j < quadrantWidth; j++) {
-                        if (i == 0 && i == j) {
-                            continue;
-                        }
-                        if (i == height - 1 && j == width - 1) {
-                            continue;
-                        }
+                    for (int j = 2 * (width / 3); j < quadrantWidth; j += NUM_CALCULATIONS_PER_THREAD) {
                         final int ROW = i;
                         final int COL = j;
+                        final int COLEND;
+                        // Possible exclusive end of the range of columns a task is in charge of (8 cells)
+                        int possibleColCalcEnd = j + NUM_CALCULATIONS_PER_THREAD;
+                        if (width <= possibleColCalcEnd) {
+                            COLEND = possibleColCalcEnd;
+                        } else {
+                            COLEND = width;
+                        }
                         workStealingPool.submit(() -> {
-                            double result = calculateNewTempForRegion(ROW, COL);
-                            alloyToStoreResults.setTempOfRegion(result, ROW, COL);
-                            alloyToStoreResults.getMetalAlloyRegion(ROW, COL).calcRGB();
+                            for (int currentCol = COL; currentCol < COLEND; currentCol++) {
+                                double result = calculateNewTempForRegion(ROW, currentCol);
+                                alloyToStoreResults.setTempOfRegion(result, ROW, currentCol);
+                                alloyToStoreResults.getMetalAlloyRegion(ROW, currentCol).calcRGB();
+                            }
                         });
                     }
                 }

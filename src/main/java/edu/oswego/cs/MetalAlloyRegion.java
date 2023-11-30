@@ -13,7 +13,7 @@ public class MetalAlloyRegion {
     public static final int RTHRESHOLD1 = 13;
     public static final int GTHRESHOLD1 = 21;
     public static final int BTHRESHOLD1 = 235;
-    public static final double TEMPTHRESHOLD2 = 900;
+    public static final double TEMPTHRESHOLD2 = 400;
     public static final int RTHRESHOLD2 = 253;
     public static final int GTHRESHOLD2 = 29;
     public static final int BTHRESHOLD2 = 29;
