@@ -6,11 +6,11 @@ import java.awt.*;
 public class MetalAlloyView {
 
     private final JFrame metalAlloyFrame;
-    private final int DEFAULT_REGION_SIZE = 1;
+    private final int DEFAULT_REGION_SIZE = 3;
 
     public MetalAlloyView(int height, int width) {
         metalAlloyFrame = new JFrame("Metal Alloy");
-        int taskBarHeight = Toolkit.getDefaultToolkit().getScreenInsets(metalAlloyFrame.getGraphicsConfiguration()).top;
+        int taskBarHeight = Toolkit.getDefaultToolkit().getScreenInsets(metalAlloyFrame.getGraphicsConfiguration()).top + 10;
         metalAlloyFrame.setSize(DEFAULT_REGION_SIZE * width, DEFAULT_REGION_SIZE * height + taskBarHeight);
         metalAlloyFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         metalAlloyFrame.setResizable(false);

@@ -5,14 +5,14 @@ import java.util.concurrent.*;
 
 public class Main {
 
-    private static final double DEFAULT_S = 1200;
-    private static final double DEFAULT_T = 1200;
+    private static final double DEFAULT_S = 6000;
+    private static final double DEFAULT_T = 6000;
     private static final double DEFAULT_C1 = 0.75;
     private static final double DEFAULT_C2 = 1.0;
     private static final double DEFAULT_C3 = 1.25;
-    private static final int DEFAULT_HEIGHT = 200;
-    private static final int DEFAULT_WIDTH = 800;
-    private static final int DEFAULT_THRESHOLD = 10000;
+    private static final int DEFAULT_HEIGHT = 80;
+    private static final int DEFAULT_WIDTH = 320;
+    private static final int DEFAULT_THRESHOLD = 35000;
 
     private static volatile MetalAlloy alloyToBePainted;
 
@@ -80,8 +80,6 @@ public class Main {
         // Display Alloy A first
         alloyToBePainted = alloyA;
         final MetalAlloy alloyB = new MetalAlloy(height, width, c1, c2, c3);
-        final Phaser quadrantPhaser = new Phaser();
-        final Phaser regionPhaser = new Phaser();
         MetalAlloyView metalAlloyView = new MetalAlloyView(height, width);
         metalAlloyView.displayRegions(alloyA);
         metalAlloyView.display();
@@ -92,7 +90,7 @@ public class Main {
             while (simulationIsActive) {
                 metalAlloyView.displayRegions(alloyToBePainted);
                 try {
-                    Thread.sleep(40);
+                    Thread.sleep(80);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }

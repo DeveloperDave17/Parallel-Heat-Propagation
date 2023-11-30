@@ -50,12 +50,17 @@ public class MetalAlloy {
         double metal3TempSummation = getMetalSummation(row, col, 3);
         // finding the number of  neighbors
         int numNeighbors = 0;
-        for (int i = row - 1; i <= row + 1; i++) {
-            for (int j = col - 1; j <= col + 1; j++) {
-                if (i != row && j != col && !(i < 0) && !(i >= height) && !(j < 0) && !(j >= width)) {
-                    numNeighbors++;
-                }
-            }
+        if (row > 0) {
+            numNeighbors++;
+        }
+        if (row < height - 1) {
+            numNeighbors++;
+        }
+        if (col > 0) {
+            numNeighbors++;
+        }
+        if (col < width - 1) {
+            numNeighbors++;
         }
         double temperatureOfRegion = 0;
         temperatureOfRegion += c1 * metal1TempSummation / numNeighbors;

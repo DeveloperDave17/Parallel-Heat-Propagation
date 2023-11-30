@@ -29,12 +29,11 @@ public class MetalAlloyRegion {
     public MetalAlloyRegion(double temperature) {
         this.temperature = temperature;
         Random random = ThreadLocalRandom.current();
-        double variance = 0.25;
-        double baseMetalPercent = 0.33333;
+        double baseMetalPercent = 1.0 / 3.0;
         // varying metal composition
-        percentOfMetal1 = baseMetalPercent +  (baseMetalPercent * random.nextDouble(-variance, variance));
-        percentOfMetal3 = baseMetalPercent +  (baseMetalPercent * random.nextDouble(-variance, variance));
-        percentOfMetal2 = 1.0 - (percentOfMetal3 + percentOfMetal1);
+        percentOfMetal3 = baseMetalPercent;
+        percentOfMetal1 = baseMetalPercent;
+        percentOfMetal2 = baseMetalPercent;
     }
 
     public void setTemperature(double temperature) {
