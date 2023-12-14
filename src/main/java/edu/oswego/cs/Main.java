@@ -80,8 +80,7 @@ public class Main {
         // Display Alloy A first
         alloyToBePainted = alloyA;
         final MetalAlloy alloyB = new MetalAlloy(height, width, c1, c2, c3);
-        MetalAlloyView metalAlloyView = new MetalAlloyView(height, width);
-        metalAlloyView.displayRegions(alloyA);
+        MetalAlloyView metalAlloyView = new MetalAlloyView(height, width, alloyA);
         metalAlloyView.display();
         ExecutorService displayService = Executors.newFixedThreadPool(1);
         // Activate the display for the simulation

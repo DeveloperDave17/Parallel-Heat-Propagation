@@ -2,23 +2,50 @@ package edu.oswego.cs;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 public class MetalAlloyView {
 
     private final JFrame metalAlloyFrame;
     private final int DEFAULT_REGION_SIZE = 3;
 
-    public MetalAlloyView(int height, int width) {
+    DrawRegions regions;
+    private final int ORIGINAL_HEIGHT;
+
+    private final int ORIGINAL_WIDTH;
+
+    double heightScale;
+
+    double widthScale;
+
+
+    public MetalAlloyView(int height, int width, MetalAlloy alloy) {
         metalAlloyFrame = new JFrame("Metal Alloy");
-        int taskBarHeight = Toolkit.getDefaultToolkit().getScreenInsets(metalAlloyFrame.getGraphicsConfiguration()).top + 10;
-        metalAlloyFrame.setSize(DEFAULT_REGION_SIZE * width, DEFAULT_REGION_SIZE * height + taskBarHeight);
+        int taskBarHeight = Toolkit.getDefaultToolkit().getScreenInsets(metalAlloyFrame.getGraphicsConfiguration()).top;
+        ORIGINAL_HEIGHT = DEFAULT_REGION_SIZE * height;
+        ORIGINAL_WIDTH = DEFAULT_REGION_SIZE * width;
+        heightScale = 1.0;
+        widthScale = 1.0;
+        metalAlloyFrame.setSize(ORIGINAL_WIDTH, ORIGINAL_HEIGHT);
         metalAlloyFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        metalAlloyFrame.setResizable(false);
+        metalAlloyFrame.setResizable(true);
+        displayRegions(alloy);
+        metalAlloyFrame.addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent event) {
+                Component c = event.getComponent();
+                int height = c.getHeight();
+                int width = c.getWidth();
+                heightScale = (double)height / ORIGINAL_HEIGHT;
+                widthScale = (double)width / ORIGINAL_WIDTH;
+                displayRegions(alloy);
+            }
+        });
     }
 
     public void displayRegions(MetalAlloy alloy) {
         metalAlloyFrame.getContentPane().removeAll();
-        DrawRegions regions = new DrawRegions(alloy);
+        regions = new DrawRegions(alloy);
         metalAlloyFrame.getContentPane().add(regions);
         metalAlloyFrame.revalidate();
         metalAlloyFrame.repaint();
@@ -51,8 +78,10 @@ public class MetalAlloyView {
 
         @Override
         protected void paintComponent(Graphics graphics) {
-            super.paintComponent(graphics);
-            drawRegions(graphics);
+            Graphics2D g2 = (Graphics2D)graphics;
+            g2.scale(widthScale, heightScale);
+            super.paintComponent(g2);
+            drawRegions(g2);
         }
     }
 }
